@@ -1,0 +1,2419 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SubAlert — Subscription Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --sb: #0d0d0e;
+        --sb2: #161618;
+        --sb3: #1e1e21;
+        --sbm: #6a6a72;
+        --sbt: #e8e7e2;
+        --accent: #c5f135;
+        --accent2: #9fc41a;
+        --bg: #f4f3ef;
+        --bg2: #eeede9;
+        --white: #ffffff;
+        --border: rgba(0, 0, 0, 0.07);
+        --border2: rgba(0, 0, 0, 0.12);
+        --txt: #111110;
+        --txt2: #5c5b57;
+        --txt3: #9e9d99;
+        --red: #ef4444;
+        --red-bg: #fee2e2;
+        --red-t: #991b1b;
+        --amber: #f59e0b;
+        --amber-bg: #fef3c7;
+        --amber-t: #92400e;
+        --blue: #3b82f6;
+        --blue-bg: #dbeafe;
+        --blue-t: #1e40af;
+        --green: #22c55e;
+        --green-bg: #dcfce7;
+        --green-t: #15803d;
+        --purple: #8b5cf6;
+        --purple-bg: #ede9fe;
+        --purple-t: #5b21b6;
+        --font: "DM Sans", sans-serif;
+        --mono: "DM Mono", monospace;
+        --r-sm: 8px;
+        --r: 12px;
+        --r-lg: 16px;
+        --r-xl: 20px;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+        --shadow-md:
+          0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04);
+        --shadow-lg:
+          0 12px 40px rgba(0, 0, 0, 0.14), 0 4px 12px rgba(0, 0, 0, 0.06);
+      }
+
+      html,
+      body {
+        height: 100%;
+        font-family: var(--font);
+        background: var(--bg);
+        color: var(--txt);
+        font-size: 14px;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* ─── LAYOUT ─────────────────────────────────────── */
+      .app {
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .sidebar {
+        width: 240px;
+        flex-shrink: 0;
+        background: var(--sb);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background: var(--bg);
+      }
+
+      /* ─── SIDEBAR ─────────────────────────────────────── */
+      .logo-area {
+        padding: 22px 20px 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .logo-mark {
+        width: 32px;
+        height: 32px;
+        border-radius: 9px;
+        background: var(--accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .logo-mark svg {
+        width: 16px;
+        height: 16px;
+      }
+      .logo-name {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--sbt);
+        letter-spacing: -0.3px;
+      }
+      .logo-tag {
+        font-size: 10px;
+        color: var(--sbm);
+        margin-top: 1px;
+        letter-spacing: 0.2px;
+      }
+
+      .nav {
+        padding: 12px 12px;
+        flex: 1;
+      }
+      .nav-section-label {
+        font-size: 10px;
+        font-weight: 500;
+        color: var(--sbm);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        padding: 0 8px;
+        margin-bottom: 4px;
+        margin-top: 12px;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 10px;
+        border-radius: var(--r-sm);
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 400;
+        color: var(--sbm);
+        margin-bottom: 2px;
+        transition: all 0.13s ease;
+        user-select: none;
+        position: relative;
+      }
+
+      .nav-item:hover {
+        background: var(--sb2);
+        color: var(--sbt);
+      }
+      .nav-item.active {
+        background: var(--sb3);
+        color: var(--sbt);
+        font-weight: 500;
+      }
+      .nav-item.active::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3px;
+        height: 16px;
+        background: var(--accent);
+        border-radius: 0 3px 3px 0;
+      }
+
+      .nav-icon {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+        opacity: 0.6;
+      }
+      .nav-item.active .nav-icon,
+      .nav-item:hover .nav-icon {
+        opacity: 1;
+      }
+
+      .sidebar-footer {
+        padding: 12px;
+        margin-top: auto;
+      }
+
+      .tip-box {
+        background: rgba(197, 241, 53, 0.06);
+        border: 1px solid rgba(197, 241, 53, 0.12);
+        border-radius: var(--r);
+        padding: 12px 14px;
+      }
+
+      .tip-top {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 5px;
+      }
+      .tip-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--accent);
+        flex-shrink: 0;
+      }
+      .tip-label {
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .tip-text {
+        font-size: 11px;
+        color: var(--sbm);
+        line-height: 1.5;
+      }
+
+      /* ─── TOP BAR ────────────────────────────────────── */
+      .topbar {
+        padding: 18px 28px 0;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        flex-shrink: 0;
+      }
+
+      .greeting-name {
+        font-size: 22px;
+        font-weight: 600;
+        letter-spacing: -0.5px;
+        color: var(--txt);
+      }
+      .greeting-sub {
+        font-size: 13px;
+        color: var(--txt3);
+        margin-top: 2px;
+      }
+
+      .topbar-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .topbar-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        border-radius: var(--r-sm);
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        border: 1px solid var(--border2);
+        background: var(--white);
+        color: var(--txt2);
+        font-family: var(--font);
+        transition: all 0.12s;
+        box-shadow: var(--shadow);
+      }
+
+      .topbar-btn:hover {
+        background: var(--bg);
+        border-color: var(--border2);
+      }
+      .topbar-btn.primary {
+        background: var(--sb);
+        color: #fff;
+        border-color: var(--sb);
+      }
+      .topbar-btn.primary:hover {
+        background: #222225;
+      }
+
+      .avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--sb);
+        color: var(--accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 600;
+        flex-shrink: 0;
+        cursor: pointer;
+      }
+
+      /* ─── CONTENT ────────────────────────────────────── */
+      .content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px 28px 28px;
+      }
+      .content::-webkit-scrollbar {
+        width: 4px;
+      }
+      .content::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .content::-webkit-scrollbar-thumb {
+        background: var(--border2);
+        border-radius: 4px;
+      }
+
+      /* ─── PANELS ─────────────────────────────────────── */
+      .panel {
+        display: none;
+      }
+      .panel.active {
+        display: block;
+        animation: fadeIn 0.2s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(4px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ─── STAT CARDS ─────────────────────────────────── */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+
+      .stat-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--r-lg);
+        padding: 18px 20px;
+        box-shadow: var(--shadow);
+        position: relative;
+        overflow: hidden;
+        transition:
+          box-shadow 0.15s,
+          transform 0.15s;
+      }
+
+      .stat-card:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-1px);
+      }
+
+      .stat-card.dark {
+        background: var(--sb);
+        border-color: transparent;
+      }
+      .stat-card.accent-card {
+        background: var(--accent);
+        border-color: transparent;
+      }
+
+      .stat-label {
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--txt3);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+      }
+      .stat-card.dark .stat-label {
+        color: var(--sbm);
+      }
+      .stat-card.accent-card .stat-label {
+        color: rgba(0, 0, 0, 0.45);
+      }
+
+      .stat-value {
+        font-size: 26px;
+        font-weight: 600;
+        letter-spacing: -0.8px;
+        color: var(--txt);
+        line-height: 1;
+        font-family: var(--mono);
+      }
+      .stat-card.dark .stat-value {
+        color: var(--sbt);
+      }
+      .stat-card.accent-card .stat-value {
+        color: #0d0d0e;
+        font-size: 18px;
+      }
+
+      .stat-sub {
+        font-size: 11px;
+        color: var(--txt3);
+        margin-top: 4px;
+      }
+      .stat-card.dark .stat-sub {
+        color: var(--sbm);
+      }
+      .stat-card.accent-card .stat-sub {
+        color: rgba(0, 0, 0, 0.45);
+      }
+
+      .stat-icon-wrap {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        width: 30px;
+        height: 30px;
+        border-radius: var(--r-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* ─── SECTION CARDS ──────────────────────────────── */
+      .section-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--r-lg);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      .section-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px 12px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+      }
+
+      .section-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--txt);
+      }
+      .section-count {
+        font-size: 11px;
+        color: var(--txt3);
+        background: var(--bg);
+        padding: 2px 8px;
+        border-radius: 20px;
+        font-family: var(--mono);
+      }
+
+      .view-all {
+        font-size: 11px;
+        color: var(--txt3);
+        cursor: pointer;
+        border: 1px solid var(--border2);
+        border-radius: var(--r-sm);
+        padding: 4px 10px;
+        background: transparent;
+        font-family: var(--font);
+        transition: all 0.12s;
+      }
+
+      .view-all:hover {
+        background: var(--bg);
+        color: var(--txt2);
+      }
+
+      /* ─── CONTENT GRID ───────────────────────────────── */
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: 1fr 288px;
+        gap: 16px;
+      }
+
+      /* ─── UPCOMING CHARGES ───────────────────────────── */
+      .group-tag {
+        padding: 10px 20px 4px;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .group-tag::before {
+        content: "";
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+      .group-tag.today {
+        color: var(--red);
+      }
+      .group-tag.today::before {
+        background: var(--red);
+      }
+      .group-tag.week {
+        color: var(--amber);
+      }
+      .group-tag.week::before {
+        background: var(--amber);
+      }
+      .group-tag.month {
+        color: var(--blue);
+      }
+      .group-tag.month::before {
+        background: var(--blue);
+      }
+
+      .charge-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 11px 20px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+        transition: background 0.1s;
+        cursor: default;
+      }
+
+      .charge-row:hover {
+        background: #fafaf8;
+      }
+      .charge-row:last-child {
+        border-bottom: none;
+      }
+
+      .sub-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        flex-shrink: 0;
+        overflow: hidden;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .sub-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 10px;
+      }
+
+      .charge-info {
+        flex: 1;
+      }
+      .charge-name {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--txt);
+      }
+      .charge-meta {
+        font-size: 11px;
+        color: var(--txt3);
+        margin-top: 1px;
+      }
+
+      .charge-right {
+        text-align: right;
+        flex-shrink: 0;
+      }
+      .charge-amount {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--txt);
+        font-family: var(--mono);
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 20px;
+        margin-top: 3px;
+        letter-spacing: 0.1px;
+      }
+
+      .badge.today {
+        background: var(--red-bg);
+        color: var(--red-t);
+      }
+      .badge.soon {
+        background: var(--amber-bg);
+        color: var(--amber-t);
+      }
+      .badge.later {
+        background: var(--blue-bg);
+        color: var(--blue-t);
+      }
+      .badge.far {
+        background: var(--green-bg);
+        color: var(--green-t);
+      }
+      .badge.active {
+        background: var(--green-bg);
+        color: var(--green-t);
+      }
+
+      /* ─── RECENT SUBS ─────────────────────────────────── */
+      .recent-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 16px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+        cursor: default;
+        transition: background 0.1s;
+      }
+
+      .recent-row:hover {
+        background: #fafaf8;
+      }
+      .recent-row:last-child {
+        border-bottom: none;
+      }
+      .recent-info {
+        flex: 1;
+      }
+      .recent-name {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--txt);
+      }
+      .recent-price {
+        font-size: 11px;
+        color: var(--txt3);
+        font-family: var(--mono);
+        margin-top: 1px;
+      }
+
+      .add-cta {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 12px 16px;
+        margin: 12px;
+        background: var(--sb);
+        color: #fff;
+        border-radius: var(--r);
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 500;
+        border: none;
+        width: calc(100% - 24px);
+        font-family: var(--font);
+        transition: background 0.13s;
+      }
+
+      .add-cta:hover {
+        background: #222225;
+      }
+
+      /* ─── SUBSCRIPTIONS PAGE ─────────────────────────── */
+      .page-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+
+      .search-wrap {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--white);
+        border: 1px solid var(--border2);
+        border-radius: var(--r-sm);
+        padding: 0 12px;
+        box-shadow: var(--shadow);
+      }
+
+      .search-wrap input {
+        flex: 1;
+        border: none;
+        background: transparent;
+        outline: none;
+        font-size: 13px;
+        font-family: var(--font);
+        color: var(--txt);
+        padding: 9px 0;
+      }
+
+      .search-wrap input::placeholder {
+        color: var(--txt3);
+      }
+
+      .filter-select {
+        padding: 8px 12px;
+        border: 1px solid var(--border2);
+        border-radius: var(--r-sm);
+        background: var(--white);
+        font-size: 12px;
+        font-family: var(--font);
+        color: var(--txt2);
+        cursor: pointer;
+        outline: none;
+        box-shadow: var(--shadow);
+      }
+
+      .sub-list-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--r-lg);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      .sub-list-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 13px 18px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+        transition: background 0.1s;
+      }
+
+      .sub-list-row:hover {
+        background: #fafaf8;
+      }
+      .sub-list-row:last-child {
+        border-bottom: none;
+      }
+
+      .sub-info {
+        flex: 1;
+      }
+      .sub-list-name {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--txt);
+      }
+      .sub-list-meta {
+        font-size: 11px;
+        color: var(--txt3);
+        margin-top: 1px;
+      }
+
+      .sub-amount-col {
+        text-align: right;
+        flex-shrink: 0;
+        min-width: 80px;
+      }
+      .sub-amount {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--txt);
+        font-family: var(--mono);
+      }
+      .sub-next {
+        font-size: 10px;
+        color: var(--txt3);
+        margin-top: 2px;
+        font-family: var(--mono);
+      }
+
+      .row-actions {
+        display: flex;
+        gap: 6px;
+        flex-shrink: 0;
+      }
+
+      .act-btn {
+        padding: 5px 10px;
+        border-radius: var(--r-sm);
+        font-size: 11px;
+        font-weight: 500;
+        border: 1px solid var(--border2);
+        cursor: pointer;
+        font-family: var(--font);
+        background: transparent;
+        color: var(--txt2);
+        transition: all 0.1s;
+      }
+
+      .act-btn:hover {
+        background: var(--bg);
+      }
+      .act-btn.del {
+        color: var(--red);
+        border-color: rgba(239, 68, 68, 0.2);
+      }
+      .act-btn.del:hover {
+        background: var(--red-bg);
+        border-color: rgba(239, 68, 68, 0.3);
+      }
+
+      /* ─── ADD/EDIT FORM ──────────────────────────────── */
+      .form-wrap {
+        max-width: 480px;
+      }
+
+      .form-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--r-lg);
+        padding: 24px;
+        box-shadow: var(--shadow);
+      }
+
+      .form-card-title {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--txt);
+        margin-bottom: 20px;
+        letter-spacing: -0.3px;
+      }
+      .form-card-sub {
+        font-size: 12px;
+        color: var(--txt3);
+        margin-top: 2px;
+        font-weight: 400;
+      }
+
+      .field {
+        margin-bottom: 16px;
+      }
+      .field-label {
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--txt2);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+
+      .field-input {
+        width: 100%;
+        padding: 9px 12px;
+        border: 1px solid var(--border2);
+        border-radius: var(--r-sm);
+        font-size: 13px;
+        font-family: var(--font);
+        color: var(--txt);
+        background: var(--bg);
+        outline: none;
+        transition: all 0.13s;
+        -webkit-appearance: none;
+      }
+
+      .field-input:focus {
+        border-color: rgba(0, 0, 0, 0.22);
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.04);
+      }
+      .field-input::placeholder {
+        color: var(--txt3);
+      }
+
+      .field-row {
+        display: grid;
+        gap: 8px;
+      }
+      .field-row.cols-2 {
+        grid-template-columns: 1fr 130px;
+      }
+      .field-row.cols-3 {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+
+      .save-btn {
+        width: 100%;
+        padding: 11px;
+        background: var(--sb);
+        color: #fff;
+        border: none;
+        border-radius: var(--r-sm);
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        font-family: var(--font);
+        transition: background 0.13s;
+        margin-top: 4px;
+      }
+
+      .save-btn:hover {
+        background: #222225;
+      }
+      .secure-note {
+        text-align: center;
+        font-size: 11px;
+        color: var(--txt3);
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+      }
+
+      /* ─── MODAL ──────────────────────────────────────── */
+      .modal-bg {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.35);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 999;
+        backdrop-filter: blur(2px);
+      }
+
+      .modal-bg.open {
+        display: flex;
+      }
+
+      .modal {
+        background: var(--white);
+        border-radius: var(--r-xl);
+        padding: 24px;
+        width: 380px;
+        max-width: 90vw;
+        box-shadow: var(--shadow-lg);
+        animation: modalIn 0.2s ease;
+      }
+
+      @keyframes modalIn {
+        from {
+          opacity: 0;
+          transform: scale(0.96) translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+
+      .modal-title {
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 18px;
+        letter-spacing: -0.3px;
+      }
+      .modal-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 18px;
+        justify-content: flex-end;
+      }
+      .modal-cancel {
+        padding: 8px 16px;
+        border: 1px solid var(--border2);
+        border-radius: var(--r-sm);
+        cursor: pointer;
+        font-size: 12px;
+        background: transparent;
+        font-family: var(--font);
+        color: var(--txt2);
+      }
+      .modal-cancel:hover {
+        background: var(--bg);
+      }
+      .modal-save {
+        padding: 8px 16px;
+        border: none;
+        border-radius: var(--r-sm);
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 500;
+        background: var(--sb);
+        color: #fff;
+        font-family: var(--font);
+        transition: background 0.13s;
+      }
+      .modal-save:hover {
+        background: #222225;
+      }
+
+      /* ─── EMPTY STATE ────────────────────────────────── */
+      .empty-state {
+        text-align: center;
+        padding: 40px 24px;
+        color: var(--txt3);
+        font-size: 13px;
+      }
+
+      .empty-icon {
+        font-size: 36px;
+        margin-bottom: 10px;
+      }
+      .empty-title {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--txt2);
+        margin-bottom: 4px;
+      }
+      .empty-sub {
+        font-size: 12px;
+        color: var(--txt3);
+      }
+
+      /* ─── SETTINGS ───────────────────────────────────── */
+      .settings-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--r-lg);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        max-width: 500px;
+        margin-bottom: 16px;
+      }
+
+      .settings-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 20px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+      }
+
+      .settings-row:last-child {
+        border-bottom: none;
+      }
+      .settings-key {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--txt);
+      }
+      .settings-val {
+        font-size: 12px;
+        color: var(--txt3);
+        font-family: var(--mono);
+      }
+      .settings-section-title {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--txt3);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin: 20px 0 8px;
+      }
+
+      .danger-btn {
+        padding: 8px 16px;
+        border-radius: var(--r-sm);
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        font-family: var(--font);
+        border: 1px solid rgba(239, 68, 68, 0.25);
+        background: var(--red-bg);
+        color: var(--red-t);
+        transition: all 0.12s;
+      }
+
+      .danger-btn:hover {
+        background: #fca5a5;
+      }
+
+      /* ─── TOAST ──────────────────────────────────────── */
+      .toast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 9999;
+        background: var(--sb);
+        color: #fff;
+        padding: 10px 18px;
+        border-radius: var(--r);
+        font-size: 12px;
+        font-weight: 500;
+        box-shadow: var(--shadow-lg);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transform: translateY(80px);
+        opacity: 0;
+        transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        pointer-events: none;
+      }
+
+      .toast.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      .toast-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--accent);
+        flex-shrink: 0;
+      }
+
+      /* ─── RESPONSIVE ─────────────────────────────────── */
+      @media (max-width: 900px) {
+        .stats-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .stats-grid .stat-card:last-child {
+          grid-column: span 2;
+        }
+        .dashboard-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 200px;
+        }
+        .content {
+          padding: 16px;
+        }
+        .topbar {
+          padding: 16px 16px 0;
+        }
+        .sub-list-row {
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+        .sub-amount-col {
+          min-width: unset;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .sidebar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          height: 100%;
+          z-index: 500;
+          transform: translateX(-100%);
+          transition: transform 0.25s ease;
+          width: 240px;
+        }
+        .sidebar.open {
+          transform: translateX(0);
+        }
+        .sidebar-overlay {
+          display: none;
+          position: fixed;
+          inset: 0;
+          background: rgba(0,0,0,0.4);
+          z-index: 499;
+        }
+        .sidebar-overlay.open {
+          display: block;
+        }
+        .content {
+          padding: 12px;
+        }
+        .topbar {
+          padding: 12px 12px 0;
+          gap: 8px;
+        }
+        .greeting-name {
+          font-size: 18px;
+        }
+        .stats-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .stats-grid .stat-card:last-child {
+          grid-column: span 2;
+        }
+        .mobile-nav {
+          display: flex !important;
+        }
+        .topbar-btn.hide-mobile {
+          display: none;
+        }
+        .avatar {
+          display: none;
+        }
+        .hamburger {
+          display: flex !important;
+        }
+        .page-toolbar {
+          flex-wrap: wrap;
+        }
+        .search-wrap {
+          flex-basis: 100%;
+        }
+      }
+
+      /* ─── MOBILE NAV BAR ─────────────────────────────── */
+      .mobile-nav {
+        display: none;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--sb);
+        border-top: 1px solid rgba(255,255,255,0.06);
+        z-index: 400;
+        padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+      }
+
+      .mobile-nav-items {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+      }
+
+      .mobile-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        padding: 4px 16px;
+        cursor: pointer;
+        color: var(--sbm);
+        font-size: 10px;
+        font-weight: 500;
+        transition: color 0.13s;
+        border-radius: var(--r-sm);
+        user-select: none;
+      }
+      .mobile-nav-item.active {
+        color: var(--accent);
+      }
+      .mobile-nav-item svg {
+        width: 20px;
+        height: 20px;
+      }
+
+      /* when mobile nav is visible, pad the main content */
+      @media (max-width: 600px) {
+        .main {
+          padding-bottom: 64px;
+        }
+      }
+
+      /* ─── HAMBURGER ──────────────────────────────────── */
+      .hamburger {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: var(--r-sm);
+        border: 1px solid var(--border2);
+        background: var(--white);
+        cursor: pointer;
+        color: var(--txt2);
+        flex-shrink: 0;
+        box-shadow: var(--shadow);
+      }
+
+      /* ─── SCROLLBAR ──────────────────────────────────── */
+      select {
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+    <div class="app">
+      <!-- SIDEBAR -->
+      <div class="sidebar" id="sidebar">
+        <div class="logo-area">
+          <div class="logo-mark">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#0d0d0e"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+          </div>
+          <div>
+            <div class="logo-name">SubAlert</div>
+            <div class="logo-tag">Subscription Tracker</div>
+          </div>
+        </div>
+
+        <nav class="nav">
+          <div class="nav-section-label">Menu</div>
+          <div class="nav-item active" onclick="showPanel('dashboard')">
+            <svg
+              class="nav-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="3" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="3" width="7" height="7" rx="1" />
+              <rect x="3" y="14" width="7" height="7" rx="1" />
+              <rect x="14" y="14" width="7" height="7" rx="1" />
+            </svg>
+            Dashboard
+          </div>
+          <div class="nav-item" onclick="showPanel('subscriptions')">
+            <svg
+              class="nav-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+            </svg>
+            Subscriptions
+          </div>
+          <div class="nav-item" onclick="showPanel('add')">
+            <svg
+              class="nav-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 8v8M8 12h8" />
+            </svg>
+            Add Subscription
+          </div>
+          <div class="nav-section-label" style="margin-top: 16px">Other</div>
+          <div class="nav-item" onclick="showPanel('settings')">
+            <svg
+              class="nav-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="3" />
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
+              />
+            </svg>
+            Settings
+          </div>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="tip-box">
+            <div class="tip-top">
+              <div class="tip-dot"></div>
+              <div class="tip-label">Tip</div>
+            </div>
+            <div class="tip-text">
+              Add all your subscriptions so you never get surprised by a charge.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAIN -->
+      <div class="main">
+        <div class="topbar">
+          <div style="display:flex;align-items:center;gap:10px">
+            <button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Open menu">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M3 12h18M3 6h18M3 18h18"/>
+              </svg>
+            </button>
+          <div>
+            <div class="greeting-name" id="greeting-text">
+              Good morning, Melvin
+            </div>
+            <div class="greeting-sub">
+              Here's what's about to charge before it does.
+            </div>
+          </div>
+          </div>
+          <div class="topbar-right">
+            <button class="topbar-btn primary hide-mobile" onclick="showPanel('add')">
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+              >
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+              Add Subscription
+            </button>
+            <div class="avatar">M</div>
+          </div>
+        </div>
+
+        <div class="content">
+          <!-- DASHBOARD -->
+          <div id="panel-dashboard" class="panel active">
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-label">Total Monthly Cost</div>
+                <div class="stat-value" id="stat-total">₦0</div>
+                <div class="stat-sub" id="stat-sub-count">
+                  No active subscriptions
+                </div>
+                <div style="font-size:9px;color:var(--txt3);margin-top:4px;font-family:var(--mono);">converted to NGN · rates May 2026</div>
+                <div class="stat-icon-wrap" style="background: #f0fdf4">
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#16a34a"
+                    stroke-width="1.8"
+                  >
+                    <rect x="2" y="5" width="20" height="14" rx="2" />
+                    <path d="M2 10h20" />
+                  </svg>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-label">Active Subscriptions</div>
+                <div class="stat-value" id="stat-count">0</div>
+                <div class="stat-sub" id="stat-count-sub">You're all set</div>
+                <div class="stat-icon-wrap" style="background: #eff6ff">
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#2563eb"
+                    stroke-width="1.8"
+                  >
+                    <path d="M9 11l3 3L22 4" />
+                    <path
+                      d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"
+                    />
+                  </svg>
+                </div>
+              </div>
+              <div class="stat-card dark">
+                <div class="stat-label">Next Charge</div>
+                <div
+                  class="stat-value"
+                  id="stat-next-name"
+                  style="font-size: 18px; font-family: var(--font)"
+                >
+                  —
+                </div>
+                <div class="stat-sub" id="stat-next-info">
+                  No upcoming charges
+                </div>
+              </div>
+            </div>
+
+            <div class="dashboard-grid">
+              <div class="section-card">
+                <div class="section-head">
+                  <div class="section-title">Upcoming Charges</div>
+                  <button class="view-all" onclick="showPanel('subscriptions')">
+                    View all
+                  </button>
+                </div>
+                <div id="upcoming-list"></div>
+              </div>
+
+              <div>
+                <div class="section-card">
+                  <div class="section-head">
+                    <div class="section-title">All Subscriptions</div>
+                    <span class="section-count" id="recent-count">0</span>
+                  </div>
+                  <div id="recent-list"></div>
+                  <button class="add-cta" onclick="showPanel('add')">
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                    >
+                      <path d="M12 5v14M5 12h14" />
+                    </svg>
+                    Add Subscription
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SUBSCRIPTIONS -->
+          <div id="panel-subscriptions" class="panel">
+            <div class="page-toolbar">
+              <div class="search-wrap">
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  style="color: var(--txt3); flex-shrink: 0"
+                >
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.35-4.35" />
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Search subscriptions..."
+                  id="search-input"
+                  oninput="renderSubList()"
+                />
+              </div>
+              <select
+                class="filter-select"
+                id="filter-cycle"
+                onchange="renderSubList()"
+              >
+                <option value="">All cycles</option>
+                <option value="monthly">Monthly</option>
+                <option value="yearly">Yearly</option>
+                <option value="weekly">Weekly</option>
+              </select>
+              <button class="topbar-btn primary" onclick="showPanel('add')">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                Add
+              </button>
+            </div>
+            <div class="sub-list-card" id="sub-list"></div>
+            <div
+              style="
+                text-align: center;
+                font-size: 11px;
+                color: var(--txt3);
+                margin-top: 12px;
+              "
+              id="sub-list-count"
+            ></div>
+          </div>
+
+          <!-- ADD -->
+          <div id="panel-add" class="panel">
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 20px;
+              "
+            >
+              <button
+                onclick="showPanel('dashboard')"
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 4px;
+                  font-size: 12px;
+                  color: var(--txt3);
+                  border: none;
+                  background: none;
+                  cursor: pointer;
+                  font-family: var(--font);
+                  padding: 0;
+                "
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M19 12H5M12 5l-7 7 7 7" />
+                </svg>
+                Back
+              </button>
+              <div
+                style="
+                  font-size: 16px;
+                  font-weight: 600;
+                  color: var(--txt);
+                  letter-spacing: -0.3px;
+                "
+              >
+                Add Subscription
+              </div>
+            </div>
+            <div class="form-wrap">
+              <div class="form-card">
+                <div class="form-card-title">
+                  New Subscription
+                  <div class="form-card-sub">
+                    Track a service before it charges you
+                  </div>
+                </div>
+                <div class="field">
+                  <div class="field-label">Subscription Name</div>
+                  <input
+                    class="field-input"
+                    id="f-name"
+                    type="text"
+                    placeholder="e.g. Netflix, Spotify, Canva"
+                  />
+                </div>
+                <div class="field">
+                  <div class="field-label">Amount</div>
+                  <div class="field-row cols-2">
+                    <input
+                      class="field-input"
+                      id="f-amount"
+                      type="number"
+                      min="0"
+                      step="any"
+                      placeholder="e.g. 4400"
+                      oninput="updateNGNPreview()"
+                    />
+                    <select class="field-input" id="f-currency" onchange="updateNGNPreview()">
+                      <option value="₦">NGN (₦)</option>
+                      <option value="$">USD ($)</option>
+                      <option value="€">EUR (€)</option>
+                      <option value="£">GBP (£)</option>
+                      <option value="¥">JPY (¥)</option>
+                    </select>
+                  </div>
+                  <div id="ngn-preview" style="font-size:11px;color:var(--txt3);margin-top:5px;font-family:var(--mono);min-height:16px;"></div>
+                </div>
+                <div class="field">
+                  <div class="field-label">Billing Cycle</div>
+                  <select class="field-input" id="f-cycle">
+                    <option value="monthly">Monthly</option>
+                    <option value="yearly">Yearly</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="quarterly">Quarterly</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <div class="field-label">Next Billing Date</div>
+                  <input class="field-input" id="f-date" type="date" />
+                </div>
+                <div class="field">
+                  <div class="field-label">Category</div>
+                  <select class="field-input" id="f-category">
+                    <option value="">Select category</option>
+                    <option value="Entertainment">Entertainment</option>
+                    <option value="Music">Music</option>
+                    <option value="Productivity">Productivity</option>
+                    <option value="Design">Design</option>
+                    <option value="Cloud">Cloud / Storage</option>
+                    <option value="Gaming">Gaming</option>
+                    <option value="News">News / Media</option>
+                    <option value="Health">Health &amp; Fitness</option>
+                    <option value="Education">Education</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <button class="save-btn" onclick="saveSubscription()">
+                  Save Subscription
+                </button>
+                <div class="secure-note">
+                  <svg
+                    width="11"
+                    height="11"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                  All data stored locally on your device
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SETTINGS -->
+          <div id="panel-settings" class="panel">
+            <div
+              style="
+                font-size: 16px;
+                font-weight: 600;
+                color: var(--txt);
+                letter-spacing: -0.3px;
+                margin-bottom: 20px;
+              "
+            >
+              Settings
+            </div>
+            <div class="settings-section-title" style="margin-top: 0">
+              App Info
+            </div>
+            <div class="settings-card">
+              <div class="settings-row">
+                <span class="settings-key">Version</span
+                ><span class="settings-val">1.0.0</span>
+              </div>
+              <div class="settings-row">
+                <span class="settings-key">Total Subscriptions</span
+                ><span class="settings-val" id="cfg-total">0</span>
+              </div>
+              <div class="settings-row">
+                <span class="settings-key">Monthly Spend</span
+                ><span class="settings-val" id="cfg-spend">₦0</span>
+              </div>
+              <div class="settings-row">
+                <span class="settings-key">Data Storage</span
+                ><span class="settings-val">Browser (localStorage)</span>
+              </div>
+            </div>
+            <div class="settings-section-title">Danger Zone</div>
+            <div class="settings-card">
+              <div class="settings-row">
+                <div>
+                  <div class="settings-key">Clear All Data</div>
+                  <div
+                    style="font-size: 11px; color: var(--txt3); margin-top: 2px"
+                  >
+                    Remove all subscriptions permanently
+                  </div>
+                </div>
+                <button class="danger-btn" onclick="clearAllData()">
+                  Clear All
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOBILE NAV -->
+    <nav class="mobile-nav" id="mobile-nav">
+      <div class="mobile-nav-items">
+        <div class="mobile-nav-item active" onclick="showPanel('dashboard')" id="mnav-dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+          </svg>
+          Dashboard
+        </div>
+        <div class="mobile-nav-item" onclick="showPanel('subscriptions')" id="mnav-subscriptions">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>
+          </svg>
+          Subs
+        </div>
+        <div class="mobile-nav-item" onclick="showPanel('add')" id="mnav-add">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>
+          </svg>
+          Add
+        </div>
+        <div class="mobile-nav-item" onclick="showPanel('settings')" id="mnav-settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          Settings
+        </div>
+      </div>
+    </nav>
+
+    <!-- EDIT MODAL -->
+    <div class="modal-bg" id="edit-modal">
+      <div class="modal">
+        <div class="modal-title">Edit Subscription</div>
+        <input type="hidden" id="edit-id" />
+        <div class="field">
+          <div class="field-label">Name</div>
+          <input class="field-input" id="edit-name" type="text" />
+        </div>
+        <div class="field">
+          <div class="field-label">Amount</div>
+          <div class="field-row cols-2">
+            <input class="field-input" id="edit-amount" type="number" min="0" oninput="updateEditNGNPreview()"/>
+            <select class="field-input" id="edit-currency" onchange="updateEditNGNPreview()">
+              <option value="₦">NGN (₦)</option>
+              <option value="$">USD ($)</option>
+              <option value="€">EUR (€)</option>
+              <option value="£">GBP (£)</option>
+              <option value="¥">JPY (¥)</option>
+            </select>
+          </div>
+          <div id="edit-ngn-preview" style="font-size:11px;color:var(--txt3);margin-top:5px;font-family:var(--mono);min-height:16px;"></div>
+        </div>
+        <div class="field">
+          <div class="field-label">Billing Cycle</div>
+          <select class="field-input" id="edit-cycle">
+            <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
+            <option value="weekly">Weekly</option>
+            <option value="quarterly">Quarterly</option>
+          </select>
+        </div>
+        <div class="field">
+          <div class="field-label">Next Billing Date</div>
+          <input class="field-input" id="edit-date" type="date" />
+        </div>
+        <div class="field">
+          <div class="field-label">Category</div>
+          <select class="field-input" id="edit-category">
+            <option value="">Select category</option>
+            <option value="Entertainment">Entertainment</option>
+            <option value="Music">Music</option>
+            <option value="Productivity">Productivity</option>
+            <option value="Design">Design</option>
+            <option value="Cloud">Cloud / Storage</option>
+            <option value="Gaming">Gaming</option>
+            <option value="News">News / Media</option>
+            <option value="Health">Health &amp; Fitness</option>
+            <option value="Education">Education</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+          <button class="modal-save" onclick="saveEdit()">Save Changes</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+      <div class="toast-dot"></div>
+      <span id="toast-msg"></span>
+    </div>
+
+    <script>
+      // ─── DATA ────────────────────────────────────────────
+      const STORAGE_KEY = "subalert_v2";
+
+      // Exchange rates to NGN (updated May 2026)
+      const TO_NGN = {
+        "₦": 1,
+        "$": 1388,
+        "€": 1602,
+        "£": 1837,
+        "¥": 8.70,
+      };
+
+      const BG_COLORS = [
+        "#fee2e2",
+        "#dbeafe",
+        "#dcfce7",
+        "#fef3c7",
+        "#ede9fe",
+        "#fce7f3",
+        "#e0f2fe",
+        "#fef9c3",
+        "#f0fdf4",
+        "#f5f3ff",
+      ];
+
+      const TEXT_COLORS = [
+        "#991b1b",
+        "#1e40af",
+        "#15803d",
+        "#92400e",
+        "#5b21b6",
+        "#9d174d",
+        "#075985",
+        "#854d0e",
+        "#166534",
+        "#4c1d95",
+      ];
+
+      const SERVICE_ICONS = {
+        netflix: "https://img.icons8.com/color/48/netflix.png",
+        spotify: "https://img.icons8.com/color/48/spotify.png",
+        canva: "https://img.icons8.com/color/48/canva.png",
+        youtube: "https://img.icons8.com/color/48/youtube.png",
+        notion: "https://img.icons8.com/color/48/notion.png",
+        figma: "https://img.icons8.com/color/48/figma.png",
+        adobe: "https://img.icons8.com/color/48/adobe.png",
+        apple: "https://img.icons8.com/color/48/apple-logo.png",
+        google: "https://img.icons8.com/color/48/google-logo.png",
+        amazon: "https://img.icons8.com/color/48/amazon.png",
+        microsoft: "https://img.icons8.com/color/48/microsoft.png",
+        slack: "https://img.icons8.com/color/48/slack.png",
+        dropbox: "https://img.icons8.com/color/48/dropbox.png",
+        github: "https://img.icons8.com/ios-glyphs/48/github.png",
+        twitter: "https://img.icons8.com/color/48/twitter.png",
+        linkedin: "https://img.icons8.com/color/48/linkedin.png",
+        discord: "https://img.icons8.com/color/48/discord.png",
+        zoom: "https://img.icons8.com/color/48/zoom.png",
+        shopify: "https://img.icons8.com/color/48/shopify.png",
+        wordpress: "https://img.icons8.com/color/48/wordpress.png",
+      };
+
+      function getIcon(name, idx) {
+        const lower = name.toLowerCase();
+        const match = Object.keys(SERVICE_ICONS).find((k) => lower.includes(k));
+        if (match) {
+          return `<img src="${SERVICE_ICONS[match]}" onerror="this.style.display='none';this.nextSibling.style.display='flex'" style="width:34px;height:34px;border-radius:10px;"><div style="display:none;width:100%;height:100%;background:${BG_COLORS[idx % BG_COLORS.length]};color:${TEXT_COLORS[idx % TEXT_COLORS.length]};align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:var(--font)">${name.slice(0, 2).toUpperCase()}</div>`;
+        }
+        const bg = BG_COLORS[idx % BG_COLORS.length];
+        const tc = TEXT_COLORS[idx % TEXT_COLORS.length];
+        return `<div style="width:100%;height:100%;background:${bg};color:${tc};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:var(--font)">${name.slice(0, 2).toUpperCase()}</div>`;
+      }
+
+      let subs = [];
+
+      function loadSubs() {
+        try {
+          subs = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        } catch (e) {
+          subs = [];
+        }
+      }
+
+      function saveSubs() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(subs));
+      }
+
+      // ─── HELPERS ─────────────────────────────────────────
+      function daysDiff(dateStr) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const d = new Date(dateStr + "T00:00:00");
+        d.setHours(0, 0, 0, 0);
+        return Math.round((d - today) / 86400000);
+      }
+
+      function toMonthlyNGN(s) {
+        const rate = TO_NGN[s.currency] || 1;
+        let monthly = s.amount;
+        if (s.cycle === "yearly") monthly = s.amount / 12;
+        else if (s.cycle === "weekly") monthly = s.amount * 4.33;
+        else if (s.cycle === "quarterly") monthly = s.amount / 3;
+        return monthly * rate;
+      }
+
+      // Keep original for per-sub display in native currency
+      function toMonthly(s) {
+        if (s.cycle === "yearly") return s.amount / 12;
+        if (s.cycle === "weekly") return s.amount * 4.33;
+        if (s.cycle === "quarterly") return s.amount / 3;
+        return s.amount;
+      }
+
+      function fmtAmount(currency, amount) {
+        return `${currency}${Math.round(amount).toLocaleString()}`;
+      }
+
+      function cycleSuffix(cycle) {
+        if (cycle === "yearly") return "/ year";
+        if (cycle === "weekly") return "/ week";
+        if (cycle === "quarterly") return "/ quarter";
+        return "/ month";
+      }
+
+      function daysBadge(days) {
+        if (days <= 0) return `<span class="badge today">Today</span>`;
+        if (days <= 3) return `<span class="badge soon">${days}d left</span>`;
+        if (days <= 7) return `<span class="badge soon">${days}d left</span>`;
+        if (days <= 30) return `<span class="badge later">${days}d left</span>`;
+        return `<span class="badge far">${days}d left</span>`;
+      }
+
+      function uid() {
+        return Date.now() + Math.random().toString(36).slice(2, 7);
+      }
+
+      // ─── TOAST ────────────────────────────────────────────
+      let _toastTimer;
+      function toast(msg) {
+        const el = document.getElementById("toast");
+        document.getElementById("toast-msg").textContent = msg;
+        el.classList.add("show");
+        clearTimeout(_toastTimer);
+        _toastTimer = setTimeout(() => el.classList.remove("show"), 2500);
+      }
+
+      // ─── SIDEBAR TOGGLE (MOBILE) ──────────────────────────
+      function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('sidebar-overlay').classList.toggle('open');
+      }
+      function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('sidebar-overlay').classList.remove('open');
+      }
+
+      // ─── PANEL NAV ────────────────────────────────────────
+      function showPanel(id) {
+        document
+          .querySelectorAll(".panel")
+          .forEach((p) => p.classList.remove("active"));
+        document.getElementById("panel-" + id).classList.add("active");
+        document.querySelectorAll(".nav-item").forEach((n, i) => {
+          const ids = ["dashboard", "subscriptions", "add", null, "settings"];
+          n.classList.toggle("active", ids[i] === id);
+        });
+        // sync mobile nav
+        ["dashboard","subscriptions","add","settings"].forEach(name => {
+          const el = document.getElementById("mnav-" + name);
+          if (el) el.classList.toggle("active", name === id);
+        });
+        closeSidebar();
+        if (id === "dashboard") renderDashboard();
+        if (id === "subscriptions") renderSubList();
+        if (id === "settings") renderSettings();
+      }
+
+      // ─── DASHBOARD ────────────────────────────────────────
+      function renderDashboard() {
+        const totalNGN = subs.reduce((a, s) => a + toMonthlyNGN(s), 0);
+
+        document.getElementById("stat-total").textContent = fmtAmount("₦", totalNGN);
+        document.getElementById("stat-count").textContent = subs.length;
+        document.getElementById("stat-sub-count").textContent = subs.length
+          ? `Across ${subs.length} active subscription${subs.length !== 1 ? "s" : ""}`
+          : "No active subscriptions";
+        document.getElementById("stat-count-sub").textContent = subs.length
+          ? `All active`
+          : `Add your first subscription`;
+        document.getElementById("recent-count").textContent = subs.length;
+
+        const sorted = [...subs].sort(
+          (a, b) => new Date(a.nextDate) - new Date(b.nextDate),
+        );
+        if (sorted.length) {
+          const next = sorted[0];
+          const days = daysDiff(next.nextDate);
+          document.getElementById("stat-next-name").textContent = next.name;
+          document.getElementById("stat-next-info").textContent =
+            `${fmtAmount(next.currency, next.amount)} · ${days <= 0 ? "Today" : days === 1 ? "Tomorrow" : `In ${days} days`}`;
+        } else {
+          document.getElementById("stat-next-name").textContent = "—";
+          document.getElementById("stat-next-info").textContent =
+            "No upcoming charges";
+        }
+
+        // Upcoming
+        const ul = document.getElementById("upcoming-list");
+        if (!subs.length) {
+          ul.innerHTML = `<div class="empty-state"><div class="empty-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--txt3)"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div class="empty-title">No subscriptions yet</div><div class="empty-sub">Add one to start tracking charges</div></div>`;
+        } else {
+          const toShow = sorted.filter((s) => daysDiff(s.nextDate) <= 45);
+          const groups = { today: [], week: [], month: [] };
+          toShow.forEach((s) => {
+            const d = daysDiff(s.nextDate);
+            if (d <= 0) groups.today.push(s);
+            else if (d <= 7) groups.week.push(s);
+            else groups.month.push(s);
+          });
+          let html = "";
+          if (groups.today.length) {
+            html += `<div class="group-tag today">Due Today</div>`;
+            groups.today.forEach((s, i) => {
+              html += buildChargeRow(s, subs.indexOf(s));
+            });
+          }
+          if (groups.week.length) {
+            html += `<div class="group-tag week">Due This Week</div>`;
+            groups.week.forEach((s, i) => {
+              html += buildChargeRow(s, subs.indexOf(s));
+            });
+          }
+          if (groups.month.length) {
+            html += `<div class="group-tag month">Due This Month</div>`;
+            groups.month.forEach((s, i) => {
+              html += buildChargeRow(s, subs.indexOf(s));
+            });
+          }
+          if (!html)
+            html = `<div class="empty-state" style="padding:28px"><div style="font-size:12px;color:var(--txt3)">All clear for the next 45 days!</div></div>`;
+          ul.innerHTML = html;
+        }
+
+        // Recent list (right panel)
+        const rl = document.getElementById("recent-list");
+        if (!subs.length) {
+          rl.innerHTML = `<div style="padding:16px;text-align:center;font-size:11px;color:var(--txt3)">None yet</div>`;
+        } else {
+          rl.innerHTML = [...subs]
+            .slice(-5)
+            .reverse()
+            .map((s, i) => {
+              const realIdx = subs.indexOf(s);
+              return `<div class="recent-row">
+        <div class="sub-icon" style="width:28px;height:28px;border-radius:8px;">${getIcon(s.name, realIdx)}</div>
+        <div class="recent-info">
+          <div class="recent-name">${esc(s.name)}</div>
+          <div class="recent-price">${fmtAmount(s.currency, s.amount)} ${cycleSuffix(s.cycle)}</div>
+        </div>
+        <span class="badge active">Active</span>
+      </div>`;
+            })
+            .join("");
+        }
+      }
+
+      function buildChargeRow(s, idx) {
+        const days = daysDiff(s.nextDate);
+        return `<div class="charge-row">
+    <div class="sub-icon">${getIcon(s.name, idx)}</div>
+    <div class="charge-info">
+      <div class="charge-name">${esc(s.name)}</div>
+      <div class="charge-meta">${s.category || "Subscription"} · ${s.cycle}</div>
+    </div>
+    <div class="charge-right">
+      <div class="charge-amount">${fmtAmount(s.currency, s.amount)}</div>
+      ${daysBadge(days)}
+    </div>
+  </div>`;
+      }
+
+      // ─── SUBSCRIPTIONS LIST ───────────────────────────────
+      function renderSubList() {
+        const q = (document.getElementById("search-input")?.value || "")
+          .toLowerCase()
+          .trim();
+        const cycle = document.getElementById("filter-cycle")?.value || "";
+        const filtered = subs.filter(
+          (s) =>
+            s.name.toLowerCase().includes(q) && (!cycle || s.cycle === cycle),
+        );
+        const el = document.getElementById("sub-list");
+        const countEl = document.getElementById("sub-list-count");
+
+        if (!filtered.length) {
+          el.innerHTML = `<div class="empty-state"><div class="empty-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--txt3)"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div><div class="empty-title">${q || cycle ? "No results" : "No subscriptions yet"}</div><div class="empty-sub">${q || cycle ? "Try a different search" : "Add one using the button above"}</div></div>`;
+          countEl.textContent = "";
+          return;
+        }
+
+        const sorted = [...filtered].sort(
+          (a, b) => new Date(a.nextDate) - new Date(b.nextDate),
+        );
+        el.innerHTML = sorted
+          .map((s, i) => {
+            const realIdx = subs.indexOf(s);
+            const days = daysDiff(s.nextDate);
+            return `<div class="sub-list-row">
+      <div class="sub-icon">${getIcon(s.name, realIdx)}</div>
+      <div class="sub-info">
+        <div class="sub-list-name">${esc(s.name)}</div>
+        <div class="sub-list-meta">${s.category || "Subscription"} · ${s.cycle}</div>
+      </div>
+      ${daysBadge(days)}
+      <div class="sub-amount-col">
+        <div class="sub-amount">${fmtAmount(s.currency, s.amount)}</div>
+        <div class="sub-next">Next: ${s.nextDate}</div>
+      </div>
+      <div class="row-actions">
+        <button class="act-btn" onclick="openEdit('${s.id}')">Edit</button>
+        <button class="act-btn del" onclick="deleteSub('${s.id}')"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      </div>
+    </div>`;
+          })
+          .join("");
+        countEl.textContent = `${filtered.length} subscription${filtered.length !== 1 ? "s" : ""}`;
+      }
+
+      // ─── CRUD ─────────────────────────────────────────────
+      function saveSubscription() {
+        const name = document.getElementById("f-name").value.trim();
+        const amount = parseFloat(document.getElementById("f-amount").value);
+        const currency = document.getElementById("f-currency").value;
+        const cycle = document.getElementById("f-cycle").value;
+        const nextDate = document.getElementById("f-date").value;
+        const category = document.getElementById("f-category").value;
+
+        if (!name) {
+          toast("Please enter a subscription name");
+          return;
+        }
+        if (!amount || isNaN(amount) || amount <= 0) {
+          toast("Please enter a valid amount");
+          return;
+        }
+        if (!nextDate) {
+          toast("Please select a billing date");
+          return;
+        }
+
+        subs.push({
+          id: uid(),
+          name,
+          amount,
+          currency,
+          cycle,
+          nextDate,
+          category,
+          createdAt: Date.now(),
+        });
+        saveSubs();
+        document.getElementById("f-name").value = "";
+        document.getElementById("f-amount").value = "";
+        document.getElementById("f-date").value = defaultNextDate();
+        document.getElementById("f-category").value = "";
+        toast(`${name} added!`);
+        showPanel("dashboard");
+      }
+
+      function deleteSub(id) {
+        const s = subs.find((x) => x.id === id);
+        if (!s) return;
+        if (!confirm(`Delete "${s.name}"?`)) return;
+        subs = subs.filter((x) => x.id !== id);
+        saveSubs();
+        renderSubList();
+        renderDashboard();
+        toast(`Removed ${s.name}`);
+      }
+
+      function openEdit(id) {
+        const s = subs.find((x) => x.id === id);
+        if (!s) return;
+        document.getElementById("edit-id").value = id;
+        document.getElementById("edit-name").value = s.name;
+        document.getElementById("edit-amount").value = s.amount;
+        document.getElementById("edit-currency").value = s.currency || "₦";
+        document.getElementById("edit-cycle").value = s.cycle;
+        document.getElementById("edit-date").value = s.nextDate;
+        document.getElementById("edit-category").value = s.category || "";
+        document.getElementById("edit-modal").classList.add("open");
+        updateEditNGNPreview();
+      }
+
+      function closeModal() {
+        document.getElementById("edit-modal").classList.remove("open");
+      }
+
+      function saveEdit() {
+        const id = document.getElementById("edit-id").value;
+        const idx = subs.findIndex((s) => s.id === id);
+        if (idx < 0) return;
+        const name = document.getElementById("edit-name").value.trim();
+        const amount = parseFloat(document.getElementById("edit-amount").value);
+        if (!name || !amount || isNaN(amount)) {
+          toast("Check your inputs");
+          return;
+        }
+        subs[idx] = {
+          ...subs[idx],
+          name,
+          amount,
+          currency: document.getElementById("edit-currency").value,
+          cycle: document.getElementById("edit-cycle").value,
+          nextDate: document.getElementById("edit-date").value,
+          category: document.getElementById("edit-category").value,
+        };
+        saveSubs();
+        closeModal();
+        renderSubList();
+        renderDashboard();
+        toast(`${name} updated`);
+      }
+
+      function clearAllData() {
+        if (!confirm("This will delete ALL subscriptions. Are you sure?"))
+          return;
+        subs = [];
+        saveSubs();
+        renderSettings();
+        renderDashboard();
+        toast("All data cleared");
+      }
+
+      function renderSettings() {
+        const totalNGN = subs.reduce((a, s) => a + toMonthlyNGN(s), 0);
+        document.getElementById("cfg-total").textContent = subs.length;
+        document.getElementById("cfg-spend").textContent =
+          fmtAmount("₦", totalNGN) + "/mo";
+      }
+
+      // ─── NGN CONVERSION PREVIEW ───────────────────────────
+      function updateNGNPreview() {
+        const amount = parseFloat(document.getElementById("f-amount").value);
+        const currency = document.getElementById("f-currency").value;
+        const el = document.getElementById("ngn-preview");
+        if (!amount || currency === "₦") { el.textContent = ""; return; }
+        const rate = TO_NGN[currency] || 1;
+        el.textContent = `≈ ${fmtAmount("₦", amount * rate)} at current rate (1${currency} = ₦${rate.toLocaleString()})`;
+      }
+
+      function updateEditNGNPreview() {
+        const amount = parseFloat(document.getElementById("edit-amount").value);
+        const currency = document.getElementById("edit-currency").value;
+        const el = document.getElementById("edit-ngn-preview");
+        if (!amount || currency === "₦") { el.textContent = ""; return; }
+        const rate = TO_NGN[currency] || 1;
+        el.textContent = `≈ ${fmtAmount("₦", amount * rate)} at current rate (1${currency} = ₦${rate.toLocaleString()})`;
+      }
+
+      // ─── UTILS ────────────────────────────────────────────
+      function esc(str) {
+        return str
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function defaultNextDate() {
+        const d = new Date();
+        d.setDate(d.getDate() + 7);
+        return d.toISOString().split("T")[0];
+      }
+
+      function setGreeting() {
+        const h = new Date().getHours();
+        const g =
+          h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
+        document.getElementById("greeting-text").textContent =
+          `${g}, Melvin`;
+      }
+
+      // Close modal on backdrop click
+      document
+        .getElementById("edit-modal")
+        .addEventListener("click", function (e) {
+          if (e.target === this) closeModal();
+        });
+
+      // ─── DEMO DATA ────────────────────────────────────────
+      function seedDemo() {
+        const today = new Date();
+        const dt = (days) => {
+          const d = new Date(today);
+          d.setDate(d.getDate() + days);
+          return d.toISOString().split("T")[0];
+        };
+        subs = [
+          {
+            id: uid(),
+            name: "Netflix",
+            amount: 4400,
+            currency: "₦",
+            cycle: "monthly",
+            nextDate: dt(2),
+            category: "Entertainment",
+            createdAt: Date.now(),
+          },
+          {
+            id: uid(),
+            name: "Spotify",
+            amount: 1500,
+            currency: "₦",
+            cycle: "monthly",
+            nextDate: dt(0),
+            category: "Music",
+            createdAt: Date.now(),
+          },
+          {
+            id: uid(),
+            name: "Canva Pro",
+            amount: 3000,
+            currency: "₦",
+            cycle: "monthly",
+            nextDate: dt(5),
+            category: "Design",
+            createdAt: Date.now(),
+          },
+          {
+            id: uid(),
+            name: "Domain Name",
+            amount: 12000,
+            currency: "₦",
+            cycle: "yearly",
+            nextDate: dt(18),
+            category: "Cloud",
+            createdAt: Date.now(),
+          },
+          {
+            id: uid(),
+            name: "Google One",
+            amount: 2600,
+            currency: "₦",
+            cycle: "monthly",
+            nextDate: dt(24),
+            category: "Cloud",
+            createdAt: Date.now(),
+          },
+          {
+            id: uid(),
+            name: "Apple Music",
+            amount: 1000,
+            currency: "₦",
+            cycle: "monthly",
+            nextDate: dt(27),
+            category: "Music",
+            createdAt: Date.now(),
+          },
+        ];
+        saveSubs();
+      }
+
+      // ─── INIT ─────────────────────────────────────────────
+      loadSubs();
+      if (!subs.length) seedDemo();
+      document.getElementById("f-date").value = defaultNextDate();
+      setGreeting();
+      renderDashboard();
+    </script>
+  </body>
+</html>
