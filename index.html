@@ -913,6 +913,97 @@
         gap: 4px;
       }
 
+      /* ─── ONBOARDING MODAL ───────────────────────────── */
+      .onboard-bg {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.55);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1200;
+        backdrop-filter: blur(4px);
+      }
+      .onboard-bg.open {
+        display: flex;
+      }
+      .onboard-card {
+        background: var(--white);
+        border-radius: var(--r-xl);
+        padding: 36px 32px 28px;
+        width: 400px;
+        max-width: 92vw;
+        box-shadow: var(--shadow-lg);
+        animation: modalIn 0.22s ease;
+        text-align: center;
+      }
+      .onboard-logo {
+        width: 52px;
+        height: 52px;
+        background: var(--sb);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 18px;
+      }
+      .onboard-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--txt);
+        letter-spacing: -0.4px;
+        margin-bottom: 6px;
+      }
+      .onboard-sub {
+        font-size: 13px;
+        color: var(--txt3);
+        margin-bottom: 24px;
+        line-height: 1.5;
+      }
+      .onboard-input {
+        width: 100%;
+        padding: 11px 14px;
+        border: 1.5px solid var(--border2);
+        border-radius: var(--r-sm);
+        font-size: 14px;
+        font-family: var(--font);
+        color: var(--txt);
+        background: var(--bg);
+        outline: none;
+        transition: all 0.13s;
+        text-align: center;
+        margin-bottom: 14px;
+      }
+      .onboard-input:focus {
+        border-color: var(--sb);
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
+      }
+      .onboard-input::placeholder {
+        color: var(--txt3);
+      }
+      .onboard-btn {
+        width: 100%;
+        padding: 12px;
+        background: var(--sb);
+        color: #fff;
+        border: none;
+        border-radius: var(--r-sm);
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        font-family: var(--font);
+        transition: background 0.13s;
+      }
+      .onboard-btn:hover {
+        background: #222225;
+      }
+      .onboard-note {
+        font-size: 11px;
+        color: var(--txt3);
+        margin-top: 12px;
+      }
+
       /* ─── MODAL ──────────────────────────────────────── */
       .modal-bg {
         position: fixed;
@@ -1156,7 +1247,7 @@
           display: none;
           position: fixed;
           inset: 0;
-          background: rgba(0,0,0,0.4);
+          background: rgba(0, 0, 0, 0.4);
           z-index: 499;
         }
         .sidebar-overlay.open {
@@ -1206,7 +1297,7 @@
         left: 0;
         right: 0;
         background: var(--sb);
-        border-top: 1px solid rgba(255,255,255,0.06);
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
         z-index: 400;
         padding: 8px 0 max(8px, env(safe-area-inset-bottom));
       }
@@ -1269,7 +1360,11 @@
     </style>
   </head>
   <body>
-    <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+    <div
+      class="sidebar-overlay"
+      id="sidebar-overlay"
+      onclick="closeSidebar()"
+    ></div>
     <div class="app">
       <!-- SIDEBAR -->
       <div class="sidebar" id="sidebar">
@@ -1377,23 +1472,37 @@
       <!-- MAIN -->
       <div class="main">
         <div class="topbar">
-          <div style="display:flex;align-items:center;gap:10px">
-            <button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Open menu">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                <path d="M3 12h18M3 6h18M3 18h18"/>
+          <div style="display: flex; align-items: center; gap: 10px">
+            <button
+              class="hamburger"
+              id="hamburger-btn"
+              onclick="toggleSidebar()"
+              aria-label="Open menu"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              >
+                <path d="M3 12h18M3 6h18M3 18h18" />
               </svg>
             </button>
-          <div>
-            <div class="greeting-name" id="greeting-text">
-              Good morning, Melvin
+            <div>
+              <div class="greeting-name" id="greeting-text">Good morning</div>
+              <div class="greeting-sub">
+                Here's what's about to charge before it does.
+              </div>
             </div>
-            <div class="greeting-sub">
-              Here's what's about to charge before it does.
-            </div>
-          </div>
           </div>
           <div class="topbar-right">
-            <button class="topbar-btn primary hide-mobile" onclick="showPanel('add')">
+            <button
+              class="topbar-btn primary hide-mobile"
+              onclick="showPanel('add')"
+            >
               <svg
                 width="12"
                 height="12"
@@ -1406,7 +1515,7 @@
               </svg>
               Add Subscription
             </button>
-            <div class="avatar">M</div>
+            <div class="avatar" id="user-avatar">?</div>
           </div>
         </div>
 
@@ -1420,7 +1529,16 @@
                 <div class="stat-sub" id="stat-sub-count">
                   No active subscriptions
                 </div>
-                <div style="font-size:9px;color:var(--txt3);margin-top:4px;font-family:var(--mono);">converted to NGN · rates May 2026</div>
+                <div
+                  style="
+                    font-size: 9px;
+                    color: var(--txt3);
+                    margin-top: 4px;
+                    font-family: var(--mono);
+                  "
+                >
+                  converted to NGN · rates May 2026
+                </div>
                 <div class="stat-icon-wrap" style="background: #f0fdf4">
                   <svg
                     width="14"
@@ -1540,7 +1658,16 @@
                 <option value="weekly">Weekly</option>
               </select>
               <button class="topbar-btn primary" onclick="showPanel('add')">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                >
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
                 Add
               </button>
             </div>
@@ -1633,7 +1760,11 @@
                       placeholder="e.g. 4400"
                       oninput="updateNGNPreview()"
                     />
-                    <select class="field-input" id="f-currency" onchange="updateNGNPreview()">
+                    <select
+                      class="field-input"
+                      id="f-currency"
+                      onchange="updateNGNPreview()"
+                    >
                       <option value="₦">NGN (₦)</option>
                       <option value="$">USD ($)</option>
                       <option value="€">EUR (€)</option>
@@ -1641,7 +1772,16 @@
                       <option value="¥">JPY (¥)</option>
                     </select>
                   </div>
-                  <div id="ngn-preview" style="font-size:11px;color:var(--txt3);margin-top:5px;font-family:var(--mono);min-height:16px;"></div>
+                  <div
+                    id="ngn-preview"
+                    style="
+                      font-size: 11px;
+                      color: var(--txt3);
+                      margin-top: 5px;
+                      font-family: var(--mono);
+                      min-height: 16px;
+                    "
+                  ></div>
                 </div>
                 <div class="field">
                   <div class="field-label">Billing Cycle</div>
@@ -1748,32 +1888,117 @@
       </div>
     </div>
 
+    <!-- ONBOARDING MODAL -->
+    <div class="onboard-bg" id="onboard-modal">
+      <div class="onboard-card">
+        <div class="onboard-logo">
+          <svg
+            width="26"
+            height="26"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#c5f135"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+          </svg>
+        </div>
+        <div class="onboard-title">Welcome to SubAlert</div>
+        <div class="onboard-sub">
+          Never get surprised by a charge again.<br />What should we call you?
+        </div>
+        <input
+          class="onboard-input"
+          id="onboard-name"
+          type="text"
+          placeholder="Your first name"
+          maxlength="30"
+          autocomplete="given-name"
+          onkeydown="if (event.key === 'Enter') finishOnboarding();"
+        />
+        <button class="onboard-btn" onclick="finishOnboarding()">
+          Get Started
+        </button>
+        <div class="onboard-note">
+          Your data stays on your device. No accounts needed.
+        </div>
+      </div>
+    </div>
+
     <!-- MOBILE NAV -->
     <nav class="mobile-nav" id="mobile-nav">
       <div class="mobile-nav-items">
-        <div class="mobile-nav-item active" onclick="showPanel('dashboard')" id="mnav-dashboard">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-            <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+        <div
+          class="mobile-nav-item active"
+          onclick="showPanel('dashboard')"
+          id="mnav-dashboard"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="3" y="3" width="7" height="7" rx="1" />
+            <rect x="14" y="3" width="7" height="7" rx="1" />
+            <rect x="3" y="14" width="7" height="7" rx="1" />
+            <rect x="14" y="14" width="7" height="7" rx="1" />
           </svg>
           Dashboard
         </div>
-        <div class="mobile-nav-item" onclick="showPanel('subscriptions')" id="mnav-subscriptions">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>
+        <div
+          class="mobile-nav-item"
+          onclick="showPanel('subscriptions')"
+          id="mnav-subscriptions"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
           </svg>
           Subs
         </div>
         <div class="mobile-nav-item" onclick="showPanel('add')" id="mnav-add">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 8v8M8 12h8" />
           </svg>
           Add
         </div>
-        <div class="mobile-nav-item" onclick="showPanel('settings')" id="mnav-settings">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        <div
+          class="mobile-nav-item"
+          onclick="showPanel('settings')"
+          id="mnav-settings"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+            />
           </svg>
           Settings
         </div>
@@ -1792,8 +2017,18 @@
         <div class="field">
           <div class="field-label">Amount</div>
           <div class="field-row cols-2">
-            <input class="field-input" id="edit-amount" type="number" min="0" oninput="updateEditNGNPreview()"/>
-            <select class="field-input" id="edit-currency" onchange="updateEditNGNPreview()">
+            <input
+              class="field-input"
+              id="edit-amount"
+              type="number"
+              min="0"
+              oninput="updateEditNGNPreview()"
+            />
+            <select
+              class="field-input"
+              id="edit-currency"
+              onchange="updateEditNGNPreview()"
+            >
               <option value="₦">NGN (₦)</option>
               <option value="$">USD ($)</option>
               <option value="€">EUR (€)</option>
@@ -1801,7 +2036,16 @@
               <option value="¥">JPY (¥)</option>
             </select>
           </div>
-          <div id="edit-ngn-preview" style="font-size:11px;color:var(--txt3);margin-top:5px;font-family:var(--mono);min-height:16px;"></div>
+          <div
+            id="edit-ngn-preview"
+            style="
+              font-size: 11px;
+              color: var(--txt3);
+              margin-top: 5px;
+              font-family: var(--mono);
+              min-height: 16px;
+            "
+          ></div>
         </div>
         <div class="field">
           <div class="field-label">Billing Cycle</div>
@@ -1848,14 +2092,15 @@
     <script>
       // ─── DATA ────────────────────────────────────────────
       const STORAGE_KEY = "subalert_v2";
+      const USER_KEY = "subalert_user";
 
       // Exchange rates to NGN (updated May 2026)
       const TO_NGN = {
         "₦": 1,
-        "$": 1388,
+        $: 1388,
         "€": 1602,
         "£": 1837,
-        "¥": 8.70,
+        "¥": 8.7,
       };
 
       const BG_COLORS = [
@@ -1993,12 +2238,12 @@
 
       // ─── SIDEBAR TOGGLE (MOBILE) ──────────────────────────
       function toggleSidebar() {
-        document.getElementById('sidebar').classList.toggle('open');
-        document.getElementById('sidebar-overlay').classList.toggle('open');
+        document.getElementById("sidebar").classList.toggle("open");
+        document.getElementById("sidebar-overlay").classList.toggle("open");
       }
       function closeSidebar() {
-        document.getElementById('sidebar').classList.remove('open');
-        document.getElementById('sidebar-overlay').classList.remove('open');
+        document.getElementById("sidebar").classList.remove("open");
+        document.getElementById("sidebar-overlay").classList.remove("open");
       }
 
       // ─── PANEL NAV ────────────────────────────────────────
@@ -2012,7 +2257,7 @@
           n.classList.toggle("active", ids[i] === id);
         });
         // sync mobile nav
-        ["dashboard","subscriptions","add","settings"].forEach(name => {
+        ["dashboard", "subscriptions", "add", "settings"].forEach((name) => {
           const el = document.getElementById("mnav-" + name);
           if (el) el.classList.toggle("active", name === id);
         });
@@ -2026,7 +2271,10 @@
       function renderDashboard() {
         const totalNGN = subs.reduce((a, s) => a + toMonthlyNGN(s), 0);
 
-        document.getElementById("stat-total").textContent = fmtAmount("₦", totalNGN);
+        document.getElementById("stat-total").textContent = fmtAmount(
+          "₦",
+          totalNGN,
+        );
         document.getElementById("stat-count").textContent = subs.length;
         document.getElementById("stat-sub-count").textContent = subs.length
           ? `Across ${subs.length} active subscription${subs.length !== 1 ? "s" : ""}`
@@ -2270,13 +2518,19 @@
       }
 
       function clearAllData() {
-        if (!confirm("This will delete ALL subscriptions. Are you sure?"))
+        if (
+          !confirm(
+            "This will delete ALL your data and reset the app. Are you sure?",
+          )
+        )
           return;
         subs = [];
         saveSubs();
+        localStorage.removeItem(USER_KEY);
         renderSettings();
         renderDashboard();
         toast("All data cleared");
+        showOnboardingIfNew();
       }
 
       function renderSettings() {
@@ -2291,7 +2545,10 @@
         const amount = parseFloat(document.getElementById("f-amount").value);
         const currency = document.getElementById("f-currency").value;
         const el = document.getElementById("ngn-preview");
-        if (!amount || currency === "₦") { el.textContent = ""; return; }
+        if (!amount || currency === "₦") {
+          el.textContent = "";
+          return;
+        }
         const rate = TO_NGN[currency] || 1;
         el.textContent = `≈ ${fmtAmount("₦", amount * rate)} at current rate (1${currency} = ₦${rate.toLocaleString()})`;
       }
@@ -2300,7 +2557,10 @@
         const amount = parseFloat(document.getElementById("edit-amount").value);
         const currency = document.getElementById("edit-currency").value;
         const el = document.getElementById("edit-ngn-preview");
-        if (!amount || currency === "₦") { el.textContent = ""; return; }
+        if (!amount || currency === "₦") {
+          el.textContent = "";
+          return;
+        }
         const rate = TO_NGN[currency] || 1;
         el.textContent = `≈ ${fmtAmount("₦", amount * rate)} at current rate (1${currency} = ₦${rate.toLocaleString()})`;
       }
@@ -2320,12 +2580,49 @@
         return d.toISOString().split("T")[0];
       }
 
+      function getUserName() {
+        try {
+          const u = JSON.parse(localStorage.getItem(USER_KEY) || "{}");
+          return u.name || null;
+        } catch {
+          return null;
+        }
+      }
+
       function setGreeting() {
         const h = new Date().getHours();
         const g =
           h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
-        document.getElementById("greeting-text").textContent =
-          `${g}, Melvin`;
+        const name = getUserName();
+        document.getElementById("greeting-text").textContent = name
+          ? `${g}, ${name}`
+          : g;
+        const avatar = document.getElementById("user-avatar");
+        if (avatar) avatar.textContent = name ? name[0].toUpperCase() : "?";
+      }
+
+      function finishOnboarding() {
+        const input = document.getElementById("onboard-name");
+        const name = input.value.trim();
+        if (!name) {
+          input.focus();
+          return;
+        }
+        localStorage.setItem(USER_KEY, JSON.stringify({ name }));
+        document.getElementById("onboard-modal").classList.remove("open");
+        setGreeting();
+        if (!subs.length) seedDemo();
+        renderDashboard();
+      }
+
+      function showOnboardingIfNew() {
+        if (!getUserName()) {
+          document.getElementById("onboard-modal").classList.add("open");
+          setTimeout(
+            () => document.getElementById("onboard-name").focus(),
+            100,
+          );
+        }
       }
 
       // Close modal on backdrop click
@@ -2410,9 +2707,10 @@
 
       // ─── INIT ─────────────────────────────────────────────
       loadSubs();
-      if (!subs.length) seedDemo();
       document.getElementById("f-date").value = defaultNextDate();
       setGreeting();
+      showOnboardingIfNew();
+      if (getUserName() && !subs.length) seedDemo();
       renderDashboard();
     </script>
   </body>
